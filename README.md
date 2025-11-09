@@ -1,4 +1,4 @@
-# 🚀 QueueCTL - Minimal Background Job Queue
+# 🚀 QueueCTL -Background Job Queue
 
 [![Python Version](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
@@ -38,28 +38,15 @@
 ### Install from Source
 
 ```bash
-# Clone the repository
+
 git clone https://github.com/Sriram24042/FLAM.git
 cd FLAM
 
-# Install the package
+
 python -m pip install -e .
 
-# Install development dependencies (optional)
+
 python -m pip install pytest
-```
-
-### Optional: Custom Data Directory
-
-Set a custom directory for queue data:
-
-```bash
-# Windows PowerShell
-$env:QUEUECTL_HOME="D:\queue-data"
-
-# macOS / Linux
-export QUEUECTL_HOME=$HOME/.queuectl
-```
 
 By default, data is stored in `~/.queuectl/` (or `%USERPROFILE%\.queuectl\` on Windows).
 
@@ -257,8 +244,8 @@ FLAM/
 ├── queuectl/
 │   ├── __init__.py
 │   ├── __main__.py
-│   ├── cli.py              # CLI interface
-│   ├── constants.py        # Configuration constants
+│   ├── cli.py              
+│   ├── constants.py        
 │   ├── storage.py          # SQLite persistence
 │   ├── utils.py            # Utility functions
 │   ├── web.py              # Web dashboard
@@ -266,35 +253,8 @@ FLAM/
 │   └── templates/
 │       └── dashboard.html   # Web UI
 ├── tests/
-│   └── test_basic.py       # Test suite
+│   └── test_basic.py       
 ├── pyproject.toml          # Project configuration
 └── README.md               # This file
 ```
 
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 📝 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🙏 Acknowledgments
-
-- Built with [Typer](https://typer.tiangolo.com/) for CLI
-- Web dashboard powered by [Flask](https://flask.palletsprojects.com/)
-- Styled with modern CSS and [Rich](https://rich.readthedocs.io/) for terminal output
-
-## 📧 Contact
-
-For questions, issues, or contributions, please open an issue on [GitHub](https://github.com/Sriram24042/FLAM/issues).
-
----
-
-**Made with ❤️ for reliable background job processing**
