@@ -71,7 +71,7 @@ python -m pip install pytest
    ```bash
    python -m queuectl web
    ```
-   Then open http://127.0.0.1:5000 in your browser.
+   
 
 ## 📖 Usage Examples
 
