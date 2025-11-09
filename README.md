@@ -48,7 +48,7 @@ python -m pip install -e .
 
 python -m pip install pytest
 
-By default, data is stored in `~/.queuectl/` (or `%USERPROFILE%\.queuectl\` on Windows).
+
 
 ## 🎯 Quick Start
 
