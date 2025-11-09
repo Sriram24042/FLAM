@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QueueCTL Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        header {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2563eb;
+            margin-bottom: 10px;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .stat-card h3 {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #2563eb;
+        }
+        .section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .section h2 {
+            margin-bottom: 15px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+        .btn-success {
+            background: #16a34a;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #15803d;
+        }
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+        .btn-toggle {
+            background: #9333ea;
+            color: white;
+        }
+        .btn-toggle:hover {
+            background: #7e22ce;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #374151;
+        }
+        tr:hover {
+            background: #f9fafb;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .badge-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .badge-processing {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .badge-completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .badge-failed {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .badge-dead {
+            background: #f3f4f6;
+            color: #374151;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #374151;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 500px;
+            margin: 50px auto;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .close {
+            cursor: pointer;
+            font-size: 24px;
+            color: #6b7280;
+        }
+        .close:hover {
+            color: #374151;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #6b7280;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+        }
+        .dlq-section {
+            margin-top: 20px;
+        }
+        .dlq-content {
+            display: none;
+        }
+        .dlq-content.show {
+            display: block;
+        }
+        code {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            background: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 QueueCTL Dashboard</h1>
+            <p>Background Job Queue Management</p>
+        </header>
+
+        <div class="stats" id="stats">
+            <div class="stat-card">
+                <h3>Processing</h3>
+                <div class="value" id="stat-processing">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Completed</h3>
+                <div class="value" id="stat-completed">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Dead Letter</h3>
+                <div class="value" id="stat-dead">0</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header">
+                <h2>Jobs</h2>
+            </div>
+            <div class="controls">
+                <button class="btn-primary" onclick="openEnqueueModal()">+ Enqueue Job</button>
+                <button class="btn-secondary" onclick="refreshJobs()">Refresh</button>
+                <select id="filterState" onchange="refreshJobs()">
+                    <option value="">All States</option>
+                    <option value="processing">Processing (Pending + Active + Retrying)</option>
+                    <option value="completed">Completed</option>
+                </select>
+            </div>
+            <div id="jobsTable">
+                <div class="loading">Loading jobs...</div>
+            </div>
+        </div>
+
+        <div class="section dlq-section">
+            <div class="section-header">
+                <h2>Dead Letter Queue (DLQ)</h2>
+                <button class="btn-toggle" onclick="toggleDLQ()">Show DLQ</button>
+            </div>
+            <div id="dlqContent" class="dlq-content">
+                <div class="controls">
+                    <button class="btn-secondary" onclick="refreshDLQ()">Refresh</button>
+                </div>
+                <div id="dlqTable">
+                    <div class="loading">Loading DLQ...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enqueue Job Modal -->
+    <div id="enqueueModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Enqueue New Job</h2>
+                <span class="close" onclick="closeEnqueueModal()">&times;</span>
+            </div>
+            <form onsubmit="enqueueJob(event)">
+                <div class="form-group">
+                    <label>Job ID (optional)</label>
+                    <input type="text" id="jobId" placeholder="Auto-generated if empty">
+                </div>
+                <div class="form-group">
+                    <label>Command *</label>
+                    <textarea id="jobCommand" rows="3" required placeholder="echo hello"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Max Retries (optional)</label>
+                    <input type="number" id="maxRetries" min="0" placeholder="Default: 3">
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" class="btn-secondary" onclick="closeEnqueueModal()">Cancel</button>
+                    <button type="submit" class="btn-primary">Enqueue</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let refreshInterval;
+        let dlqVisible = false;
+
+        async function fetchStatus() {
+            try {
+                const res = await fetch('/api/status');
+                if (!res.ok) throw new Error('Failed to fetch status');
+                const data = await res.json();
+                document.getElementById('stat-processing').textContent = data.job_counts.processing || 0;
+                document.getElementById('stat-completed').textContent = data.job_counts.completed || 0;
+                document.getElementById('stat-dead').textContent = data.job_counts.dead || 0;
+            } catch (err) {
+                console.error('Failed to fetch status:', err);
+            }
+        }
+
+        async function refreshJobs() {
+            const state = document.getElementById('filterState').value;
+            const url = state ? `/api/jobs?state=${state}` : '/api/jobs';
+            
+            try {
+                const res = await fetch(url);
+                if (!res.ok) {
+                    const errorData = await res.json().catch(() => ({}));
+                    throw new Error(errorData.error || `HTTP ${res.status}`);
+                }
+                const data = await res.json();
+                console.log('Jobs API response:', data);
+                if (data.error) {
+                    console.error('API error:', data.error);
+                    throw new Error(data.error);
+                }
+                const jobs = data.jobs || [];
+                console.log(`Found ${jobs.length} jobs`);
+                renderJobs(jobs);
+            } catch (err) {
+                console.error('Error loading jobs:', err);
+                document.getElementById('jobsTable').innerHTML = `<div class="empty-state">Error loading jobs: ${err.message}<br><small>Check browser console for details</small></div>`;
+            }
+        }
+
+        function renderJobs(jobs) {
+            if (jobs.length === 0) {
+                document.getElementById('jobsTable').innerHTML = '<div class="empty-state">No jobs found</div>';
+                return;
+            }
+
+            let html = '<table><thead><tr><th>ID</th><th>State</th><th>Attempts</th><th>Max Retries</th><th>Command</th><th>Created</th><th>Actions</th></tr></thead><tbody>';
+            jobs.forEach(job => {
+                const badgeClass = `badge-${job.state}`;
+                html += `<tr>
+                    <td><strong>${job.id}</strong></td>
+                    <td><span class="badge ${badgeClass}">${job.state}</span></td>
+                    <td>${job.attempts}</td>
+                    <td>${job.max_retries}</td>
+                    <td><code>${escapeHtml(job.command)}</code></td>
+                    <td>${new Date(job.created_at).toLocaleString()}</td>
+                    <td>
+                        <button class="btn-danger" style="padding: 5px 10px; font-size: 12px;" onclick="deleteJob('${job.id}')">Delete</button>
+                    </td>
+                </tr>`;
+            });
+            html += '</tbody></table>';
+            document.getElementById('jobsTable').innerHTML = html;
+        }
+
+        function toggleDLQ() {
+            dlqVisible = !dlqVisible;
+            const content = document.getElementById('dlqContent');
+            const btn = event.target;
+            
+            if (dlqVisible) {
+                content.classList.add('show');
+                btn.textContent = 'Hide DLQ';
+                refreshDLQ();
+            } else {
+                content.classList.remove('show');
+                btn.textContent = 'Show DLQ';
+            }
+        }
+
+        async function refreshDLQ() {
+            try {
+                const res = await fetch('/api/dlq');
+                if (!res.ok) {
+                    throw new Error(`HTTP ${res.status}`);
+                }
+                const data = await res.json();
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                renderDLQ(data.jobs || []);
+            } catch (err) {
+                console.error('Error loading DLQ:', err);
+                document.getElementById('dlqTable').innerHTML = `<div class="empty-state">Error loading DLQ: ${err.message}</div>`;
+            }
+        }
+
+        function renderDLQ(jobs) {
+            if (jobs.length === 0) {
+                document.getElementById('dlqTable').innerHTML = '<div class="empty-state">Dead letter queue is empty</div>';
+                return;
+            }
+
+            let html = '<table><thead><tr><th>ID</th><th>Attempts</th><th>Max Retries</th><th>Command</th><th>Error</th><th>Created</th><th>Actions</th></tr></thead><tbody>';
+            jobs.forEach(job => {
+                html += `<tr>
+                    <td><strong>${job.id}</strong></td>
+                    <td>${job.attempts}</td>
+                    <td>${job.max_retries}</td>
+                    <td><code>${escapeHtml(job.command)}</code></td>
+                    <td><code style="color: #dc2626; font-size: 11px;">${escapeHtml(job.last_error || 'N/A')}</code></td>
+                    <td>${new Date(job.created_at).toLocaleString()}</td>
+                    <td>
+                        <button class="btn-success" style="padding: 5px 10px; font-size: 12px; margin-right: 5px;" onclick="retryJob('${job.id}')">Retry</button>
+                        <button class="btn-danger" style="padding: 5px 10px; font-size: 12px;" onclick="deleteJob('${job.id}')">Delete</button>
+                    </td>
+                </tr>`;
+            });
+            html += '</tbody></table>';
+            document.getElementById('dlqTable').innerHTML = html;
+        }
+
+        function openEnqueueModal() {
+            document.getElementById('enqueueModal').style.display = 'block';
+        }
+
+        function closeEnqueueModal() {
+            document.getElementById('enqueueModal').style.display = 'none';
+            document.getElementById('jobId').value = '';
+            document.getElementById('jobCommand').value = '';
+            document.getElementById('maxRetries').value = '';
+        }
+
+        async function enqueueJob(e) {
+            e.preventDefault();
+            const jobId = document.getElementById('jobId').value.trim();
+            const command = document.getElementById('jobCommand').value.trim();
+            const maxRetries = document.getElementById('maxRetries').value;
+
+            const payload = { command };
+            if (jobId) payload.id = jobId;
+            if (maxRetries) payload.max_retries = parseInt(maxRetries);
+
+            try {
+                const res = await fetch('/api/jobs', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    alert('Job enqueued successfully!');
+                    closeEnqueueModal();
+                    refreshJobs();
+                    fetchStatus();
+                } else {
+                    alert('Error: ' + (data.error || 'Unknown error'));
+                }
+            } catch (err) {
+                alert('Failed to enqueue job: ' + err.message);
+            }
+        }
+
+        async function deleteJob(jobId) {
+            if (!confirm(`Delete job ${jobId}?`)) return;
+            try {
+                const res = await fetch(`/api/jobs/${jobId}`, { method: 'DELETE' });
+                if (res.ok) {
+                    refreshJobs();
+                    if (dlqVisible) refreshDLQ();
+                    fetchStatus();
+                } else {
+                    const data = await res.json();
+                    alert('Failed to delete job: ' + (data.error || 'Unknown error'));
+                }
+            } catch (err) {
+                alert('Failed to delete job: ' + err.message);
+            }
+        }
+
+        async function retryJob(jobId) {
+            try {
+                const res = await fetch(`/api/jobs/${jobId}/retry`, { method: 'POST' });
+                if (res.ok) {
+                    refreshDLQ();
+                    refreshJobs();
+                    fetchStatus();
+                } else {
+                    const data = await res.json();
+                    alert('Failed to retry job: ' + (data.error || 'Unknown error'));
+                }
+            } catch (err) {
+                alert('Failed to retry job: ' + err.message);
+            }
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Initial load and auto-refresh
+        fetchStatus();
+        refreshJobs();
+        refreshInterval = setInterval(() => {
+            fetchStatus();
+            refreshJobs();
+            if (dlqVisible) refreshDLQ();
+        }, 3000);
+
+        // Close modal on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('enqueueModal');
+            if (event.target === modal) {
+                closeEnqueueModal();
+            }
+        }
+    </script>
+</body>
+</html>
